@@ -1,0 +1,69 @@
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+    />
+    <title>Entering captcha</title>
+  </head>
+  <body>
+    <p style="text-align: center; font-size: 1.2em">
+      Please, enter captcha for continue
+    </p>
+    <p />
+    <button id="continue-btn" style="display: none">Continue to app</button>
+
+    <script src="https://www.gstatic.com/firebasejs/5.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.10.1/firebase-auth.js"></script>
+    <script>
+      // Initialize Firebase
+      var config = {
+        apiKey: 'AIzaSyAm2x1MLnL36KcM9EfBhAQb_YljowIWj7M',
+        authDomain: 'pixelmath-v2-test.firebaseapp.com',
+        databaseURL: 'https://pixelmath-v2-test.firebaseio.com',
+        projectId: 'pixelmath-v2-test',
+        storageBucket: 'pixelmath-v2-test.appspot.com',
+        messagingSenderId: '769146621187',
+        appId: '1:769146621187:web:97984fd5e9d6ea12e7ad36',
+        measurementId: 'G-YZFN69C7K5',
+      };
+      firebase.initializeApp(config);
+    </script>
+    <script>
+      function getToken(callback) {
+        var container = document.createElement('div');
+        container.id = 'captcha';
+        document.body.appendChild(container);
+        var captcha = new firebase.auth.RecaptchaVerifier('captcha', {
+          size: 'normal',
+          callback: function (token) {
+            callback(token);
+          },
+          'expired-callback': function () {
+            callback('');
+          },
+        });
+        captcha.render().then(function () {
+          captcha.verify();
+        });
+      }
+      function sendTokenToApp(token) {
+        var baseUri = decodeURIComponent(
+          location.search.replace(/^\?appurl\=/, ''),
+        );
+        const finalUrl = (location.href =
+          baseUri + '/?token=' + encodeURIComponent(token));
+        const continueBtn = document.querySelector('#continue-btn');
+        console.log(finalUrl);
+        // continueBtn.onclick = (event)=>{
+        //     window.open(finalUrl,'_blank')
+        // }
+        continueBtn.style.display = 'block';
+      }
+      document.addEventListener('DOMContentLoaded', function () {
+        getToken(sendTokenToApp);
+      });
+    </script>
+  </body>
+</html>
